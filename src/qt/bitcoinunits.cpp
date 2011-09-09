@@ -11,9 +11,9 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(BTC);
+    // unitlist.append(BTC);
     unitlist.append(mBTC);
-    unitlist.append(uBTC);
+    // unitlist.append(uBTC);
     return unitlist;
 }
 
@@ -32,6 +32,8 @@ bool BitcoinUnits::valid(int unit)
 
 QString BitcoinUnits::name(int unit)
 {
+    return QString::fromUtf8("Chips");
+
     switch(unit)
     {
     case BTC: return QString("BTC");
@@ -43,6 +45,8 @@ QString BitcoinUnits::name(int unit)
 
 QString BitcoinUnits::description(int unit)
 {
+    return QString("Chips");
+
     switch(unit)
     {
     case BTC: return QString("Bitcoins");
@@ -54,6 +58,8 @@ QString BitcoinUnits::description(int unit)
 
 qint64 BitcoinUnits::factor(int unit)
 {
+    return 100000;
+
     switch(unit)
     {
     case BTC:  return 100000000;

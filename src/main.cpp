@@ -28,9 +28,9 @@ unsigned int nTransactionsUpdated = 0;
 map<COutPoint, CInPoint> mapNextTx;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+uint256 hashGenesisBlock("0x000050698b79cb56f3fad2d9091461b85e27cb5eac5d13d6dbcc98a148c1d50f");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 32);
-const int nTotalBlocksEstimate = 140700; // Conservative estimate of total nr of blocks on main chain
+const int nTotalBlocksEstimate = 0; // Conservative estimate of total nr of blocks on main chain
 int nMaxBlocksOfOtherNodes = 0; // Maximum amount of blocks that other nodes claim to have
 const int nInitialBlockThreshold = 120; // Regard blocks up until N-threshold as "initial download"
 CBlockIndex* pindexGenesisBlock = NULL;
@@ -644,7 +644,7 @@ uint256 static GetOrphanRoot(const CBlock* pblock)
 
 int64 static GetBlockValue(int nHeight, int64 nFees)
 {
-    int64 nSubsidy = 50 * COIN;
+    int64 nSubsidy = 5000 * COIN;
 
     // Subsidy is cut in half every 4 years
     nSubsidy >>= (nHeight / 210000);
@@ -654,8 +654,8 @@ int64 static GetBlockValue(int nHeight, int64 nFees)
 
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast)
 {
-    const int64 nTargetTimespan = 14 * 24 * 60 * 60; // two weeks
-    const int64 nTargetSpacing = 10 * 60;
+    const int64 nTargetTimespan = 24 * 60 * 60; // One day. Original - two weeks
+    const int64 nTargetSpacing = 2 * 60; // One per 2 minutes. Original - 10 * 60.
     const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
     // Genesis block
@@ -674,11 +674,22 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast)
 
     // Limit adjustment step
     int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+    int64 nTwoPercent = nTargetTimespan/50;
+
     printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
-    if (nActualTimespan < nTargetTimespan/4)
-        nActualTimespan = nTargetTimespan/4;
-    if (nActualTimespan > nTargetTimespan*4)
-        nActualTimespan = nTargetTimespan*4;
+
+    if (nActualTimespan < nTargetTimespan)
+    {
+        //limit increase to a much lower amount than dictates to get past the pump-n-dump mining phase
+        //due to retargets being done more often it also needs to be lowered significantly from the 4x increase
+        if(nActualTimespan<(nTwoPercent*16)) //less than ~3.2 minute?
+            nActualTimespan=(nTwoPercent*45); //pretend it was only 10% faster than desired
+        else if(nActualTimespan<(nTwoPercent*32)) //less than ~6.4 minutes?
+            nActualTimespan=(nTwoPercent*47); //pretend it was only 6% faster than desired
+        else
+            nActualTimespan=(nTwoPercent*49); //pretend it was only 2% faster than desired
+    }
+    else if (nActualTimespan > nTargetTimespan*4)   nActualTimespan = nTargetTimespan*4;
 
     // Retarget
     CBigNum bnNew;
@@ -704,8 +715,8 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
     bnTarget.SetCompact(nBits);
 
     // Check range
-    if (bnTarget <= 0 || bnTarget > bnProofOfWorkLimit)
-        return error("CheckProofOfWork() : nBits below minimum work");
+    //if (bnTarget <= 0 || bnTarget > bnProofOfWorkLimit)
+        //return error("CheckProofOfWork() : nBits below minimum work.");
 
     // Check proof of work matches claimed amount
     if (hash > bnTarget.getuint256())
@@ -1302,7 +1313,7 @@ bool CBlock::AcceptBlock()
 
     // Check that the block chain matches the known block chain up to a checkpoint
     if (!fTestNet)
-        if ((nHeight ==  11111 && hash != uint256("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")) ||
+        /* if ((nHeight ==  11111 && hash != uint256("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")) ||
             (nHeight ==  33333 && hash != uint256("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")) ||
             (nHeight ==  68555 && hash != uint256("0x00000000001e1b4903550a0b96e9a9405c8a95f387162e4944e8d9fbe501cd6a")) ||
             (nHeight ==  70567 && hash != uint256("0x00000000006a49b14bcf27462068f1264c961f11fa2e0eddd2be0791e1d4124a")) ||
@@ -1311,7 +1322,7 @@ bool CBlock::AcceptBlock()
             (nHeight == 118000 && hash != uint256("0x000000000000774a7f8a7a12dc906ddb9e17e75d684f15e00f8767f9e8f36553")) ||
             (nHeight == 134444 && hash != uint256("0x00000000000005b12ffd4cd315cd34ffd4a594f430ac814c91184a0d42d2b0fe")) ||
             (nHeight == 140700 && hash != uint256("0x000000000000033b512028abb90e1626d8b346fd0ed598ac0a3c371138dce2bd")))
-            return error("AcceptBlock() : rejected by checkpoint lockin at %d", nHeight);
+            return error("AcceptBlock() : rejected by checkpoint lockin at %d", nHeight); */
 
     // Write block to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK)))
@@ -1457,7 +1468,7 @@ bool LoadBlockIndex(bool fAllowNew)
 {
     if (fTestNet)
     {
-        hashGenesisBlock = uint256("0x00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
+        hashGenesisBlock = uint256("0x000050698b79cb56f3fad2d9091461b85e27cb5eac5d13d6dbcc98a148c1d50f");
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 28);
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
@@ -1489,34 +1500,35 @@ bool LoadBlockIndex(bool fAllowNew)
         //   vMerkleTree: 4a5e1e
 
         // Genesis block
-        const char* pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
+        const char* pszTimestamp = "25/Aug/2011 USA Today, Steve Jobs abruptly resigned as chief executive Wednesday night.";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 50 * COIN;
+        txNew.vout[0].nValue = 5000 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG;
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1231006505;
-        block.nBits    = 0x1d00ffff;
-        block.nNonce   = 2083236893;
+        block.nTime    = 1315458721;
+        block.nBits    = 0x1f00ffff;
+        block.nNonce   = 970289714;
 
         if (fTestNet)
         {
-            block.nTime    = 1296688602;
+            block.nTime    = 1315458721;
             block.nBits    = 0x1d07fff8;
-            block.nNonce   = 384568319;
+            block.nNonce   = 970283030;
         }
 
         //// debug print
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
+
+        assert(block.hashMerkleRoot == uint256("0x13b407c79f583664e049bbcdd49a3dd150895b68ac270d93b625c932db91b6a4"));
         block.print();
         assert(block.GetHash() == hashGenesisBlock);
 
@@ -1744,7 +1756,7 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ascii, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xf9, 0xbe, 0xb4, 0xd9 };
+unsigned char pchMessageStart[4] = { 0xcf, 0xf5, 0xae, 0xef };
 
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
