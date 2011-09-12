@@ -57,7 +57,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     notificator(0)
 {
     resize(850, 550);
-    setWindowTitle(tr("Bitcoin Wallet"));
+    setWindowTitle(tr("Bitchip Wallet"));
     setWindowIcon(QIcon(":icons/bitcoin"));
     // Accept D&D of URIs
     setAcceptDrops(true);
@@ -198,7 +198,7 @@ void BitcoinGUI::createActions()
     tabGroup->addAction(receiveCoinsAction);
 
     sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send coins"), this);
-    sendCoinsAction->setToolTip(tr("Send coins to a bitcoin address"));
+    sendCoinsAction->setToolTip(tr("Send coins to a Bitchip address"));
     sendCoinsAction->setCheckable(true);
     tabGroup->addAction(sendCoinsAction);
 
@@ -211,10 +211,10 @@ void BitcoinGUI::createActions()
     quitAction = new QAction(QIcon(":/icons/quit"), tr("&Exit"), this);
     quitAction->setToolTip(tr("Quit application"));
     aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About"), this);
-    aboutAction->setToolTip(tr("Show information about Bitcoin"));
+    aboutAction->setToolTip(tr("Show information about Bitchip"));
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setToolTip(tr("Modify configuration options for bitcoin"));
-    openBitcoinAction = new QAction(QIcon(":/icons/bitcoin"), tr("Open &Bitcoin"), this);
+    optionsAction->setToolTip(tr("Modify configuration options for Bitchip"));
+    openBitcoinAction = new QAction(QIcon(":/icons/bitcoin"), tr("Open &Bitchip"), this);
     openBitcoinAction->setToolTip(tr("Show the Bitcoin window"));
     exportAction = new QAction(QIcon(":/icons/export"), tr("&Export..."), this);
     exportAction->setToolTip(tr("Export the current view to a file"));
@@ -295,7 +295,7 @@ void BitcoinGUI::createTrayIcon()
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip("Bitcoin client");
+    trayIcon->setToolTip("Bitchip client");
     trayIcon->setIcon(QIcon(":/icons/toolbar"));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -340,7 +340,7 @@ void BitcoinGUI::setNumConnections(int count)
     default: icon = ":/icons/connect_4"; break;
     }
     labelConnectionsIcon->setPixmap(QIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bitcoin network", "", count));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bitchip network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count)
