@@ -52,10 +52,11 @@ HEADERS = \
     net.h \
     noui.h \
     protocol.h \
-    rpc.h \
+    bitcoinrpc.h \
     script.h \
     serialize.h \
     strlcpy.h \
+    qtui.h \
     ui.h \
     uibase.h \
     uint256.h \
@@ -71,7 +72,7 @@ OBJS= \
     obj/main.o \
     obj/net.o \
     obj/protocol.o \
-    obj/rpc.o \
+    obj/bitcoinrpc.o \
     obj/script.o \
     obj/util.o \
     obj/wallet.o \
@@ -79,7 +80,7 @@ OBJS= \
     cryptopp/obj/cpu.o
 
 
-all: bitcoin
+all: bitchip
 
 
 obj/%.o: %.cpp $(HEADERS)
@@ -88,24 +89,24 @@ obj/%.o: %.cpp $(HEADERS)
 cryptopp/obj/%.o: cryptopp/%.cpp
 	$(CXX) -c $(CXXFLAGS) -O3 -o $@ $<
 
-bitcoin: $(OBJS) obj/ui.o obj/uibase.o
+bitchip: $(OBJS) obj/ui.o obj/uibase.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(WXLIBS) $(LIBS)
 
 
 obj/nogui/%.o: %.cpp $(HEADERS)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
-bitcoind: $(OBJS:obj/%=obj/nogui/%)
+bitchipd: $(OBJS:obj/%=obj/nogui/%)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
-obj/test/test_bitcoin.o: $(wildcard test/*.cpp) $(HEADERS)
-	$(CXX) -c $(CFLAGS) -o $@ test/test_bitcoin.cpp
+obj/test/test_bitchip.o: $(wildcard test/*.cpp) $(HEADERS)
+	$(CXX) -c $(CFLAGS) -o $@ test/test_bitchip.cpp
 
-test_bitcoin: obj/test/test_bitcoin.o $(filter-out obj/nogui/init.o,$(OBJS:obj/%=obj/nogui/%))
+test_bitchip: obj/test/test_bitchip.o $(filter-out obj/nogui/init.o,$(OBJS:obj/%=obj/nogui/%))
 	$(CXX) $(CXXFLAGS) -o $@ $(LIBPATHS) $^ -Wl,-Bstatic -lboost_unit_test_framework $(LIBS)
 
 clean:
-	-rm -f bitcoin bitcoind test_bitcoin
+	-rm -f bitchip bitchipd test_bitchip
 	-rm -f obj/*.o
 	-rm -f obj/nogui/*.o
 	-rm -f obj/test/*.o
