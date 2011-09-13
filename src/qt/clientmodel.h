@@ -23,6 +23,7 @@ public:
 
     int getNumConnections() const;
     int getNumBlocks() const;
+    int getNumBlocksAtStartup();
 
     QDateTime getLastBlockDate() const;
 
@@ -31,7 +32,7 @@ public:
     // Return true if core is doing initial block download
     bool inInitialBlockDownload() const;
     // Return conservative estimate of total number of blocks, or 0 if unknown
-    int getTotalBlocksEstimate() const;
+    int getNumBlocksOfPeers() const;
 
     QString formatFullVersion() const;
 
@@ -40,6 +41,8 @@ private:
 
     int cachedNumConnections;
     int cachedNumBlocks;
+
+    int numBlocksAtStartup;
 
 signals:
     void numConnectionsChanged(int count);

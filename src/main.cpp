@@ -31,8 +31,8 @@ map<uint256, CBlockIndex*> mapBlockIndex;
 uint256 hashGenesisBlock("0x000050698b79cb56f3fad2d9091461b85e27cb5eac5d13d6dbcc98a148c1d50f");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 32);
 const int nTotalBlocksEstimate = 0; // Conservative estimate of total nr of blocks on main chain
-int nMaxBlocksOfOtherNodes = 0; // Maximum amount of blocks that other nodes claim to have
 const int nInitialBlockThreshold = 120; // Regard blocks up until N-threshold as "initial download"
+int nMaxBlocksOfPeers = 0; // Amount of blocks that other nodes claim to have
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 CBigNum bnBestChainWork = 0;
@@ -739,9 +739,9 @@ int GetTotalBlocksEstimate()
 }
 
 // Return maximum amount of blocks that other nodes claim to have
-int GetMaxBlocksOfOtherNodes()
+int GetNumBlocksOfPeers()
 {
-    return nMaxBlocksOfOtherNodes;
+    return std::max(nMaxBlocksOfPeers, GetTotalBlocksEstimate());
 }
 
 bool IsInitialBlockDownload()
@@ -1858,9 +1858,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         pfrom->fSuccessfullyConnected = true;
 
         printf("version message: version %d, blocks=%d\n", pfrom->nVersion, pfrom->nStartingHeight);
-        if(pfrom->nStartingHeight > nMaxBlocksOfOtherNodes)
+        if(pfrom->nStartingHeight > nMaxBlocksOfPeers)
         {
-            nMaxBlocksOfOtherNodes = pfrom->nStartingHeight;
+            nMaxBlocksOfPeers = pfrom->nStartingHeight;
         }
     }
 

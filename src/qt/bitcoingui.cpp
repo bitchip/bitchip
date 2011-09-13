@@ -21,7 +21,6 @@
 #include "guiconstants.h"
 #include "askpassphrasedialog.h"
 #include "notificator.h"
-#include "qtwin.h"
 
 #include <QApplication>
 #include <QMainWindow>
@@ -159,16 +158,6 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
 
     // Doubleclicking on a transaction on the transaction history page shows details
     connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
-
-#ifdef Q_OS_WIN
-    // Windows-specific customization
-    if (QtWin::isCompositionEnabled())
-    {
-        QtWin::extendFrameIntoClientArea(this);
-        setContentsMargins(0, 0, 0, 0);
-    }
-#endif
-    setWindowComposition();
 
     gotoOverviewPage();
 }
@@ -345,15 +334,16 @@ void BitcoinGUI::setNumConnections(int count)
 
 void BitcoinGUI::setNumBlocks(int count)
 {
-    int total = clientModel->getTotalBlocksEstimate();
+    int initTotal = clientModel->getNumBlocksAtStartup();
+    int total = clientModel->getNumBlocksOfPeers();
     QString tooltip;
 
     if(count < total)
     {
         progressBarLabel->setVisible(true);
         progressBar->setVisible(true);
-        progressBar->setMaximum(total);
-        progressBar->setValue(count);
+        progressBar->setMaximum(total - initTotal);
+        progressBar->setValue(count - initTotal);
         tooltip = tr("Downloaded %1 of %2 blocks of transaction history.").arg(count).arg(total);
     }
     else
@@ -431,7 +421,6 @@ void BitcoinGUI::changeEvent(QEvent *e)
             }
         }
     }
-    setWindowComposition();
     QMainWindow::changeEvent(e);
 }
 
@@ -443,41 +432,6 @@ void BitcoinGUI::closeEvent(QCloseEvent *event)
         qApp->quit();
     }
     QMainWindow::closeEvent(event);
-}
-
-void BitcoinGUI::setWindowComposition()
-{
-#ifdef Q_OS_WIN
-    // Make the background transparent on Windows Vista or 7, except when maximized
-    // Otherwise text becomes hard to read
-    if (QtWin::isCompositionEnabled())
-    {
-        QPalette pal = palette();
-        QColor bg = pal.window().color();
-        if(isMaximized())
-        {
-            setAttribute(Qt::WA_TranslucentBackground, false);
-            setAttribute(Qt::WA_StyledBackground, true);
-            QBrush wb = pal.window();
-            bg = wb.color();
-            bg.setAlpha(255);
-            pal.setColor(QPalette::Window, bg);
-            setPalette(pal);
-
-        }
-        else
-        {
-            setAttribute(Qt::WA_TranslucentBackground);
-            setAttribute(Qt::WA_StyledBackground, false);
-            bg.setAlpha(0);
-            pal.setColor(QPalette::Window, bg);
-            setPalette(pal);
-            setAttribute(Qt::WA_NoSystemBackground, false);
-            ensurePolished();
-            setAttribute(Qt::WA_StyledBackground, false);
-        }
-    }
-#endif
 }
 
 void BitcoinGUI::askFee(qint64 nFeeRequired, bool *payFee)

@@ -99,7 +99,6 @@ HEADERS += src/qt/bitcoingui.h \
     src/bitcoinrpc.h \
     src/qt/overviewpage.h \
     src/qt/csvmodelwriter.h \
-    src/qt/qtwin.h \
     src/crypter.h \
     src/qt/sendcoinsentry.h \
     src/qt/qvalidatedlineedit.h \
@@ -147,7 +146,6 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/bitcoinrpc.cpp \
     src/qt/overviewpage.cpp \
     src/qt/csvmodelwriter.cpp \
-    src/qt/qtwin.cpp \
     src/crypter.cpp \
     src/qt/sendcoinsentry.cpp \
     src/qt/qvalidatedlineedit.cpp \
@@ -174,3 +172,14 @@ CODECFORTR = UTF-8
 # for lrelease/lupdate
 TRANSLATIONS = src/qt/locale/bitcoin_nl.ts src/qt/locale/bitcoin_de.ts \
                src/qt/locale/bitcoin_ru.ts
+
+OTHER_FILES += \
+    README.rst
+
+# For use with MacPorts
+macx:INCLUDEPATH += /opt/local/include /opt/local/include/db48
+macx:LIBS += -L/opt/local/lib -L/opt/local/lib/db48
+
+# Additional Mac options
+macx:ICON = src/qt/res/icons/bitcoin.icns
+macx:TARGET = "Bitcoin Qt"
