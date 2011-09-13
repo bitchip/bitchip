@@ -244,7 +244,7 @@ class CBitcoinAddress : public CBase58Data
 public:
     bool SetHash160(const uint160& hash160)
     {
-        SetData(fTestNet ? 247 : 246, &hash160, 20);
+        SetData(fTestNet ? 15 : 27, &hash160, 20);
         return true;
     }
 
@@ -259,10 +259,10 @@ public:
         bool fExpectTestNet = false;
         switch(nVersion)
         {
-            case 246:
+            case 27:
                 break;
 
-            case 247:
+            case 15:
                 fExpectTestNet = true;
                 break;
 
