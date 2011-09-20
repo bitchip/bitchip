@@ -91,6 +91,18 @@ HEADERS += src/qt/bitcoingui.h \
     src/util.h \
     src/uint256.h \
     src/serialize.h \
+    src/cryptopp/stdcpp.h \
+    src/cryptopp/smartptr.h \
+    src/cryptopp/simple.h \
+    src/cryptopp/sha.h \
+    src/cryptopp/secblock.h \
+    src/cryptopp/pch.h \
+    src/cryptopp/misc.h \
+    src/cryptopp/iterhash.h \
+    src/cryptopp/cryptlib.h \
+    src/cryptopp/cpu.h \
+    src/cryptopp/config.h \
+    src/scrypt/scrypt.h \
     src/strlcpy.h \
     src/main.h \
     src/net.h \
@@ -146,6 +158,9 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/aboutdialog.cpp \
     src/qt/editaddressdialog.cpp \
     src/qt/bitcoinaddressvalidator.cpp \
+    src/cryptopp/sha.cpp \
+    src/cryptopp/cpu.cpp \
+    src/scrypt/scrypt.c \
     src/util.cpp \
     src/script.cpp \
     src/main.cpp \

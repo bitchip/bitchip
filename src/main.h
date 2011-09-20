@@ -10,6 +10,7 @@
 #include "key.h"
 #include "script.h"
 #include "db.h"
+#include "scrypt/scrypt.h"
 
 #include <list>
 
@@ -840,6 +841,13 @@ public:
     {
         return Hash(BEGIN(nVersion), END(nNonce));
     }
+    
+    uint256 GetPoWHash() const
+    {
+        uint256 thash;
+        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
+        return thash;
+    }
 
     int64 GetBlockTime() const
     {
@@ -952,7 +960,7 @@ public:
         filein >> *this;
 
         // Check the header
-        if (!CheckProofOfWork(GetHash(), nBits))
+        if (!CheckProofOfWork(GetPoWHash(), nBits))
             return error("CBlock::ReadFromDisk() : errors in block header");
 
         return true;
@@ -962,8 +970,9 @@ public:
 
     void print() const
     {
-        printf("CBlock(hash=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%d)\n",
+        printf("CBlock(hash=%s, PoW=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%d)\n",
             GetHash().ToString().substr(0,20).c_str(),
+            GetPoWHash().ToString().substr(0,20).c_str(),
             nVersion,
             hashPrevBlock.ToString().substr(0,20).c_str(),
             hashMerkleRoot.ToString().substr(0,10).c_str(),
@@ -1095,7 +1104,7 @@ public:
 
     bool CheckIndex() const
     {
-        return CheckProofOfWork(GetBlockHash(), nBits);
+        return true;//CheckProofOfWork(GetBlockHash(), nBits);
     }
 
     bool EraseBlockFromDisk()
