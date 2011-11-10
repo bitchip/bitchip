@@ -29,7 +29,8 @@ map<COutPoint, CInPoint> mapNextTx;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
 uint256 hashGenesisBlock("0x000050698b79cb56f3fad2d9091461b85e27cb5eac5d13d6dbcc98a148c1d50f");
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 32);
+//static CBigNum bnProofOfWorkLimit(~uint256(0) >> 36);
+static CBigNum bnProofOfWorkLimit( CBigNum().SetCompact(0x1f00ffff) );
 const int nTotalBlocksEstimate = 0; // Conservative estimate of total nr of blocks on main chain
 const int nInitialBlockThreshold = 120; // Regard blocks up until N-threshold as "initial download"
 int nMaxBlocksOfPeers = 0; // Amount of blocks that other nodes claim to have
