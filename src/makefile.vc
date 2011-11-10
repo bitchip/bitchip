@@ -77,6 +77,7 @@ OBJS= \
     obj\protocol.o \
     obj\script.o \
     obj\util.o \
+    obj\scrypt.o \
     obj\wallet.o
 
 RC=../share
@@ -121,7 +122,7 @@ obj\nogui\util.obj: $(HEADERS)
 
 obj\nogui\script.obj: $(HEADERS)
 
-obj\nogui\scrypt.obj: scrypt.c gcc -c -o $@ $^
+obj\nogui\scrypt.obj: scrypt\scrypt.c gcc -c -o $@ $^
 
 obj\nogui\db.obj: $(HEADERS)
 

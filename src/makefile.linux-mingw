@@ -73,11 +73,12 @@ OBJS= \
     obj/bitcoinrpc.o \
     obj/script.o \
     obj/util.o \
+    obj/scrypt.o \
     obj/wallet.o
 
 all: bitcoind.exe
 
-obj/nogui/scrypt.o: scrypt.c
+obj/nogui/scrypt.o: scrypt/scrypt.c
 	gcc -c -o $@ $^
 
 obj/nogui/%.o: %.cpp $(HEADERS)

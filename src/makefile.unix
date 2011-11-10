@@ -119,7 +119,8 @@ OBJS= \
     obj/bitcoinrpc.o \
     obj/script.o \
     obj/util.o \
-    obj/wallet.o
+    obj/scrypt.o \
+    obj/wallet.o 
 
 
 all: bitchipd
@@ -128,10 +129,7 @@ all: bitchipd
 -include obj/nogui/*.P
 -include obj/test/*.P
 
-obj/nogui/scrypt.o: scrypt.c
-	gcc -c -o $@ $^
-
-obj/nogui/scrypt.o: scrypt.c
+obj/nogui/scrypt.o: scrypt/scrypt.c
 	gcc -c -o $@ $^
 
 obj/nogui/%.o: %.cpp
