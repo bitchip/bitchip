@@ -27,7 +27,7 @@ unsigned int nTransactionsUpdated = 0;
 map<COutPoint, CInPoint> mapNextTx;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x000050698b79cb56f3fad2d9091461b85e27cb5eac5d13d6dbcc98a148c1d50f");
+uint256 hashGenesisBlock("0x7c8bb28665da885e9c43181fffdea71beacb3a4eb3835ca5a870ef11c3885a1c");
 //static CBigNum bnProofOfWorkLimit(~uint256(0) >> 36);
 static CBigNum bnProofOfWorkLimit( CBigNum().SetCompact(0x1f00ffff) );
 const int nTotalBlocksEstimate = 0; // Conservative estimate of total nr of blocks on main chain
@@ -1531,7 +1531,7 @@ bool LoadBlockIndex(bool fAllowNew)
         block.nVersion = 1;
         block.nTime    = 1315458721;
         block.nBits    = 0x1f00ffff;
-        block.nNonce   = 970289714;
+        block.nNonce   = 970418923;
 
         if (fTestNet)
         {
@@ -1544,6 +1544,38 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
+
+        if (mapArgs.count("-gennewblock"))
+        {       
+           // This will figure out a valid hash and Nonce if you're
+           // creating a different genesis block:
+           uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
+           uint256 thash;
+           char scratchpad[scrypt_scratchpad_size];
+
+           loop
+           {
+               scrypt_1024_1_1_256_sp(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
+               if (thash <= hashTarget)
+                   break;
+               if ((block.nNonce & 0xFFF) == 0)
+               {
+                   printf("nonce %08X\n", block.nNonce);
+               }
+               ++block.nNonce;
+               if (block.nNonce == 0)
+               {
+                   printf("NONCE WRAPPED, incrementing time\n");
+                   ++block.nTime;
+               }
+           }
+
+           printf("block.nTime = %u \n", block.nTime);
+           printf("block.nNonce = %u \n", block.nNonce);
+           printf("block.GetHash = %s\n", block.GetHash().ToString().c_str());
+           printf("hashGenesisBlock = %s\n", hashGenesisBlock.ToString().c_str());
+           printf("block.hashMerkleRoot = %s\n", block.hashMerkleRoot.ToString().c_str());
+        }
 
         assert(block.hashMerkleRoot == uint256("0x13b407c79f583664e049bbcdd49a3dd150895b68ac270d93b625c932db91b6a4"));
         block.print();
